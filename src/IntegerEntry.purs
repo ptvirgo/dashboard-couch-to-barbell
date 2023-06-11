@@ -32,14 +32,17 @@ component stepSize =
     }
     where
 
-    lockStep :: Int -> Int
-    lockStep x = x - (x `mod` stepSize)
+    validInt :: Int -> Int
+    validInt x = max 0 $ x - (x `mod` stepSize)
+
+    stringToValidInt :: String -> Maybe Int
+    stringToValidInt str = validInt <$> fromString str
 
     initialState :: Input -> State
-    initialState x = Right (lockStep x)
+    initialState x = Right (validInt x)
 
     handleAction :: Action -> H.HalogenM State Action () Output m Unit
-    handleAction (Receive x) = H.modify_ \_ -> Right (lockStep x)
+    handleAction (Receive x) = H.modify_ \_ -> Right (validInt x)
     handleAction (SetValue str) = H.modify_ \_ -> setValue str
     handleAction (Typing str) = H.modify_ \_ -> typing str
     handleAction Increment = H.modify_ increment
@@ -51,16 +54,16 @@ component stepSize =
     {- If you try to consolidate 'setValue' and 'typing', the lockStep function will interfere with the user's ability to type numbers. -}
 
     setValue :: String -> State
-    setValue str = maybe (Left str) (Right <<< lockStep) (fromString str)
+    setValue str = maybe (Left str) Right (stringToValidInt str) 
 
     typing :: String -> State
     typing str = Left str
 
     increment :: State -> State
-    increment state = (_ + stepSize) <$> state
+    increment state = (\x -> validInt $ x + stepSize) <$> state
 
     decrement :: State -> State
-    decrement state = (\x -> max 0 $ x - stepSize) <$> state
+    decrement state = (\x -> validInt $ x - stepSize) <$> state
 
     render :: State -> H.ComponentHTML Action () m
     render state = HH.div_
