@@ -51,7 +51,7 @@ component stepSize =
     handleAction (Submit x) = H.raise <<< UserEntered $ x
 
 
-    {- If you try to consolidate 'setValue' and 'typing', the lockStep function will interfere with the user's ability to type numbers. -}
+    {- If you try to consolidate 'setValue' and 'typing', the validation function will interfere with the user while they are preparing their input. -}
 
     setValue :: String -> State
     setValue str = maybe (Left str) Right (stringToValidInt str) 
