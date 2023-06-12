@@ -15,17 +15,33 @@ import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
 
 import Web.DOM.ParentNode (QuerySelector(..))
+import Type.Proxy (Proxy(..))
 
 import Core
-import IntegerEntry as IntegerEntry
+import ExerciseEntry as ExerciseEntry
 
 main :: Effect Unit
 main = HA.runHalogenAff do
     body <- HA.awaitBody
     appElement <- HA.selectElement $ QuerySelector "div#app"
     case appElement of
-        Just something -> runUI (IntegerEntry.component 5) 0 something
-        Nothing -> runUI (IntegerEntry.component 5) 0 body
+        Just something -> runUI ExerciseEntry.component demoExercise something
+        Nothing -> runUI ExerciseEntry.component demoExercise body
+
+{- Slots -}
+
+demoExercise :: Exercise
+demoExercise = Exercise
+    { movement: Movement "Stay home and code"
+    , sets: 5
+    , reps: 20
+    , weight: 3
+    , success: false
+    }
+
+type Slots = ( integerEntry :: forall q. H.Slot q Void Unit )
+_integerEntry = Proxy :: Proxy "integerEntry"
+
 
 type State = Workout
 

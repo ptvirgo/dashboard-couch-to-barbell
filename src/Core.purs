@@ -24,7 +24,6 @@ Terms:
 
 -}
 
-
 newtype Movement = Movement String
 
 derive instance newtypeMovement :: Newtype Movement _
@@ -36,7 +35,7 @@ instance arbMovement :: Arbitrary Movement where
     arbitrary = Movement <$> arbitrary
 
 instance showMovement :: Show Movement where
-    show = show <<< unwrap
+    show = unwrap
 
 newtype Exercise =
     Exercise
@@ -58,6 +57,9 @@ setWeight (Exercise record) x = Exercise record { weight = x }
 
 setSuccess :: Exercise -> Boolean -> Exercise
 setSuccess (Exercise record) x = Exercise record { success = x }
+
+toggleSuccess :: Exercise -> Exercise
+toggleSuccess (Exercise record) = Exercise $ record { success = not record.success }
 
 type Workout = Array Exercise
 

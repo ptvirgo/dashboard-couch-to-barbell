@@ -20,8 +20,8 @@ data Action = Receive Input | Typing String | SetValue String | Increment | Decr
 
 type State = Either String Int
 
-component :: forall query m. Int -> H.Component query Input Output m
-component stepSize =
+component :: forall query m. String -> Int -> H.Component query Input Output m
+component label stepSize =
     H.mkComponent
     { initialState
     , render
@@ -67,11 +67,13 @@ component stepSize =
 
     render :: State -> H.ComponentHTML Action () m
     render state = HH.div_
-        [ HH.input
+        [ HH.label [ HP.for label ] [ HH.text $ label <> ": " ]
+        , HH.input
             [ HP.value $ either identity show state
             , HE.onValueChange $ (\txt -> SetValue txt)
             , HE.onValueInput $ (\txt -> Typing txt)
             , HP.class_ <<< ClassName $ stateClass state
+            , HP.name label
             ]
         , HH.button
             [ HP.disabled <<< isLeft $ state
