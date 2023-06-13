@@ -1,6 +1,6 @@
 # Dashboard: Couch to Barbell
 
-Remind me how much I'm lifting for the Couch-to-Barbell exercises.
+Remind me how much I'm lifting for the [Couch-to-Barbell](https://www.couchtobarbell.com/) program.
 
 [Run it in your browser.](https://www.pablovirgo.com/dashboard-ctb/)
 
