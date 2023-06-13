@@ -20,7 +20,7 @@ Terms:
     - workout
         - Collection of exercises.  For CtB, there are 2 main workouts, labeled "Day A" and "Day B"
     - succeed
-        - for purpose of the dashboard, also track whether the last attempt at a given exercise was completed succeedfully, or needs to be tried again
+        - for purpose of the dashboard, also track whether the last attempt at a given exercise was completed, or needs to be tried again
 
 -}
 
