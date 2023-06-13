@@ -3,6 +3,7 @@ module Main where
 import Prelude
 
 import Data.Maybe
+import Data.Newtype (unwrap)
 
 import Effect (Effect)
 import Effect.Console (log)
@@ -15,6 +16,8 @@ import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
 
 import Web.DOM.ParentNode (QuerySelector(..))
+import Web.HTML.Common ( ClassName (..) )
+
 import Type.Proxy (Proxy(..))
 
 import Core
@@ -25,28 +28,26 @@ main = HA.runHalogenAff do
     body <- HA.awaitBody
     appElement <- HA.selectElement $ QuerySelector "div#app"
     case appElement of
-        Just something -> runUI ExerciseEntry.component demoExercise something
-        Nothing -> runUI ExerciseEntry.component demoExercise body
+        Just something -> runUI component defaultState something
+        Nothing -> runUI component defaultState body
 
 {- Slots -}
 
-demoExercise :: Exercise
-demoExercise = Exercise
-    { movement: Movement "Stay home and code"
-    , sets: 5
-    , reps: 20
-    , weight: 3
-    , success: false
+type Slots =
+    ( exerciseEntry :: forall query. H.Slot query ExerciseEntry.Output Int
+    )
+
+_exerciseEntry = Proxy :: Proxy "exerciseEntry"
+
+{- State -}
+
+type State =
+    { workout :: Workout
+    , editing :: Maybe Exercise
     }
 
-type Slots = ( integerEntry :: forall q. H.Slot q Void Unit )
-_integerEntry = Proxy :: Proxy "integerEntry"
-
-
-type State = Workout
-
-defaultState :: Workout
-defaultState =
+defaultWorkout :: Workout
+defaultWorkout =
     [
         Exercise
         { movement: Movement "Barbell Squat"
@@ -96,3 +97,66 @@ defaultState =
         , success: false
         }
     ]
+
+defaultState :: State
+defaultState =
+    { workout: defaultWorkout
+    , editing: Nothing
+    }
+
+data Action = HandleExerciseEntry ExerciseEntry.Output | Edit Exercise
+
+{- Component -}
+
+
+component :: forall query input output m. H.Component query input output m
+component =
+    H.mkComponent
+        { initialState
+        , render
+        , eval: H.mkEval $ H.defaultEval
+            { handleAction = handleAction
+            }
+        }
+    where
+
+    initialState :: input -> State
+    initialState _ = defaultState
+
+    handleAction :: Action -> H.HalogenM State Action Slots output m Unit
+    handleAction (Edit exercise) = H.modify_ $ \state -> state { editing = Just exercise }
+    handleAction (HandleExerciseEntry output) = H.modify_ $ handleExerciseEntry output
+
+    handleExerciseEntry :: ExerciseEntry.Output -> State -> State
+    handleExerciseEntry (ExerciseEntry.UpdateExercise exercise) state =
+        state
+            { workout =
+                map
+                    (\x -> if (_.movement <<< unwrap $ x) == (_.movement <<< unwrap $ exercise)
+                                then exercise
+                                else x
+                    )
+                    state.workout
+            , editing = Nothing 
+            }
+
+    render :: State -> H.ComponentHTML Action Slots m
+    render state = case state.editing of
+        Nothing -> renderWorkout state.workout
+        Just exercise ->
+            HH.div_ [ HH.slot _exerciseEntry 0 ExerciseEntry.component exercise HandleExerciseEntry ]
+
+    renderWorkout :: Workout -> H.ComponentHTML Action Slots m
+    renderWorkout workout = HH.div_ $ map renderExercise workout
+
+    renderExercise :: Exercise -> H.ComponentHTML Action Slots m 
+    renderExercise (Exercise record) =
+        HH.div
+            [ HP.classes [ ClassName "exercise", ClassName $ if record.success then "successful" else "failed" ]
+            , HE.onClick (\_ -> Edit <<< Exercise $ record)
+            ]
+            [ HH.strong_ [ HH.text <<< show $ record.movement ]
+            , HH.text $ " - " <> show record.sets <> " sets of " <> show record.reps
+            , HH.text $ " at " <> show record.weight <> " lbs."
+            , HH.text $ if record.success then " ✓ "  else " ✗ "
+            ]

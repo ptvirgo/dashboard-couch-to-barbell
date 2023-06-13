@@ -46,7 +46,7 @@ component =
     initialState :: Input -> State
     initialState input = input
 
-    handleAction :: forall state. Action -> H.HalogenM State Action Slots Output m Unit
+    handleAction :: Action -> H.HalogenM State Action Slots Output m Unit
     handleAction ToggleSuccess = H.modify_ toggleSuccess
     handleAction (HandleIntEntry (IntEntry.UserEntered x)) = H.modify_ $ \state -> setWeight state x
     handleAction (Submit exercise) = H.raise $ UpdateExercise exercise
