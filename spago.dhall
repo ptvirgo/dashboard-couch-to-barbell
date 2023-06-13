@@ -20,6 +20,7 @@ to generate this file without the comments in this block.
   , "integers"
   , "maybe"
   , "newtype"
+  , "nullable"
   , "prelude"
   , "quickcheck"
   , "test-unit"

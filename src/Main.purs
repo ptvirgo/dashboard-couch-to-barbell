@@ -8,6 +8,7 @@ import Data.Newtype (unwrap)
 
 import Effect (Effect)
 import Effect.Console (log)
+import Effect.Class (class MonadEffect)
 
 import Halogen as H
 import Halogen.Aff as HA
@@ -21,8 +22,10 @@ import Web.HTML.Common ( ClassName (..) )
 
 import Type.Proxy (Proxy(..))
 
-import Core
 import ExerciseEntry as ExerciseEntry
+
+import Core
+import Store
 
 main :: Effect Unit
 main = HA.runHalogenAff do
@@ -101,22 +104,23 @@ defaultWorkout =
 
 defaultState :: State
 defaultState =
-    { workout: defaultWorkout
+    { workout: []
     , editing: Nothing
     }
 
-data Action = HandleExerciseEntry ExerciseEntry.Output | Edit Exercise
+data Action = Initialize | HandleExerciseEntry ExerciseEntry.Output | Edit Exercise
 
 {- Component -}
 
 
-component :: forall query input output m. H.Component query input output m
+component :: forall query input output m. MonadEffect m => H.Component query input output m
 component =
     H.mkComponent
         { initialState
         , render
         , eval: H.mkEval $ H.defaultEval
             { handleAction = handleAction
+            , initialize = Just Initialize
             }
         }
     where
@@ -125,8 +129,15 @@ component =
     initialState _ = defaultState
 
     handleAction :: Action -> H.HalogenM State Action Slots output m Unit
+    handleAction Initialize = do
+       loaded <- H.liftEffect loadWorkout
+       H.modify_ $ \state -> state { workout = fromMaybe defaultWorkout loaded }
+        
     handleAction (Edit exercise) = H.modify_ $ \state -> state { editing = Just exercise }
-    handleAction (HandleExerciseEntry output) = H.modify_ $ handleExerciseEntry output
+    handleAction (HandleExerciseEntry output) = do
+        H.modify_ $ handleExerciseEntry output
+        state <- H.get
+        H.liftEffect $ saveWorkout state.workout
 
     handleExerciseEntry :: ExerciseEntry.Output -> State -> State
     handleExerciseEntry (ExerciseEntry.UpdateExercise exercise) state =
@@ -165,5 +176,7 @@ component =
             [ HH.strong_ [ HH.text <<< show $ record.movement ]
             , HH.text $ " - " <> show record.sets <> " sets of " <> show record.reps
             , HH.text $ " at " <> show record.weight <> " lbs."
-            , HH.text $ if record.success then " ✓ "  else " ✗ "
+            , HH.span
+                [ HP.classes [ ClassName "successCheckBox" ] ]
+                [ HH.text $ if record.success then " ✓ "  else " ✗ " ]
             ]
