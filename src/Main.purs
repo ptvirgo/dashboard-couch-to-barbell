@@ -2,6 +2,7 @@ module Main where
 
 import Prelude
 
+import Data.Array
 import Data.Maybe
 import Data.Newtype (unwrap)
 
@@ -147,7 +148,13 @@ component =
             HH.div_ [ HH.slot _exerciseEntry 0 ExerciseEntry.component exercise HandleExerciseEntry ]
 
     renderWorkout :: Workout -> H.ComponentHTML Action Slots m
-    renderWorkout workout = HH.div_ $ map renderExercise workout
+    renderWorkout workout =
+        HH.div_
+            [ HH.h1_ [ HH.text "Day A" ]
+            , HH.div_ <<< map renderExercise <<< take 3 $ workout
+            , HH.h1_ [ HH.text "Day B" ]
+            , HH.div_ <<< map renderExercise <<< drop 3 $ workout
+            ]
 
     renderExercise :: Exercise -> H.ComponentHTML Action Slots m 
     renderExercise (Exercise record) =
