@@ -170,7 +170,9 @@ component =
     renderExercise :: Exercise -> H.ComponentHTML Action Slots m 
     renderExercise (Exercise record) =
         HH.tr
-            [ HE.onClick (\_ -> Edit <<< Exercise $ record) ]
+            [ HE.onClick (\_ -> Edit <<< Exercise $ record)
+            , HP.classes [ ClassName "exercise" ]
+            ]
             [ HH.td
                 [ HP.classes [ ClassName "movement" ]]
                 [ HH.text <<< show $ record.movement ]
