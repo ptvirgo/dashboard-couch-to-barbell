@@ -1,17 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond&family=Josefin+Sans&family=Marcellus&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Marcellus&display=swap');
 
 :root {
-    --text: #202C39; /* --lighter: #283845 */
-    --base: #628395;
-    --background: #F1F5F2;
-    --good: #659B5E;
-    --warn: #F06449;
+    --text: #18020C; /* --lighter: #283845 */
+    --base: #074F57;
+    --background: #F5E2C8;
+    --good: #519872;
+    --warn: #FE5F00;
 }
-
-/*
-    Tangerine fade: #F29559
-    Sage: #B8B08D
-*/
 
 html {
     color: var(--text);
@@ -49,7 +44,9 @@ div.updateExercise input {
 }
 
 button {
-    border: 1px solid var(--text);
+    background-color: var(--text);
+    border: 1px solid var(--background);
+    color: var(--background);
     border-radius: .25em;
     font-size: 14pt;
     font-weight: bold;
@@ -60,11 +57,13 @@ button {
 
 button.fail {
     background-color: var(--warn);
+    color: var(--text);
     border: none;
 }
 
 button.succeed {
     background-color: var(--good);
+    color: var(--text);
     border: none;
 }
 
