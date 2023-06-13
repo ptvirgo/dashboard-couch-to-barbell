@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond&family=Josefin+Sans&family=Marcellus&display=swap');
+
+:root {
+    --text: #202C39; /* --lighter: #283845 */
+    --base: #628395;
+    --background: #F1F5F2;
+    --good: #659B5E;
+    --warn: #F06449;
+}
+
+/*
+    Tangerine fade: #F29559
+    Sage: #B8B08D
+*/
+
+html {
+    color: var(--text);
+    background-color: var(--base);
+    font-family: "Marcellus", serif;
+    font-size: 16pt;
+}
+
+h1 {
+    color: var(--base);
+    font-family: "Josefin Sans", sans-serif;
+    font-size: 18pt;
+    border-bottom: 1px solid var(--base);
+    margin: 1em 0;
+    padding-bottom: 0.5em;
+    text-align: center;
+}
+
+.main {
+    border-radius: 0.25ex;
+    background-color: var(--background);
+    margin: 3em auto;
+    padding: .5em 2ex;
+}
+
+div.updateExercise {
+    max-width: 45ex;
+    text-align: center;
+}
+
+div.updateExercise input {
+    max-width: 5ex;
+    margin: 0 0.5ex;
+    font-size: 14pt;
+}
+
+button {
+    border: 1px solid var(--text);
+    border-radius: .25em;
+    font-size: 14pt;
+    font-weight: bold;
+    min-width: 3ex;
+    margin: 0 0.1ex;
+    padding: 0.1em 0.5ex;
+}
+
+button.fail {
+    background-color: var(--warn);
+    border: none;
+}
+
+button.succeed {
+    background-color: var(--good);
+    border: none;
+}
+
+label {
+    margin: 0 1ex;
+}
+
+.invalid {
+    color: var(--warn);
+}
+
+.valid {
+    color: var(--good);
+}
+
+tr.exercise {
+    cursor: pointer;
+}
+
+tr:hover {
+    color: var(--base);
+}
+
+td {
+    padding-bottom: 0.25em;
+    padding-left: 1.5ex;
+    padding-right: 1.5ex;
+}
+
+
+td.movement {
+    font-weight: bold;
+    padding-left: 0;
+}
+
+td.successCheck {
+    padding-right: 0;
+}

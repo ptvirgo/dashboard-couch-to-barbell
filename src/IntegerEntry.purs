@@ -6,6 +6,8 @@ import Data.Either
 import Data.Int
 import Data.Maybe
 
+import Effect.Class (class MonadEffect)
+
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
@@ -20,7 +22,7 @@ data Action = Receive Input | Typing String | Submit Int
 
 type State = Either String Int
 
-component :: forall query m. String -> Int -> H.Component query Input Output m
+component :: forall query m. MonadEffect m => String -> Int -> H.Component query Input Output m
 component label stepSize =
     H.mkComponent
     { initialState
@@ -45,7 +47,7 @@ component label stepSize =
     handleAction :: Action -> H.HalogenM State Action () Output m Unit
     handleAction (Receive x) = H.modify_ \_ -> Right (validInt x)
     handleAction (Typing str) = H.modify_ \_ -> typing str
-    handleAction (Submit x) = H.raise <<< UserEntered $ x
+    handleAction (Submit x) = H.raise <<< UserEntered <<< validInt $ x
 
     {- If you try to consolidate 'mkState' and 'typing', the validation function will interfere with the user while they are preparing their input. -}
 
@@ -53,9 +55,8 @@ component label stepSize =
     typing str = Left str
 
     render :: State -> H.ComponentHTML Action () m
-    render state = HH.div_
-        [ HH.label [ HP.for label ] [ HH.text $ label <> ": " ]
-        , HH.input
+    render state = HH.span_
+        [ HH.input
             [ HP.value $ either identity show state
             , HE.onValueChange (\txt -> either Typing Submit $ mkState txt)
             , HE.onValueInput $ (\txt -> Typing txt)

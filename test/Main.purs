@@ -27,7 +27,7 @@ propSetWeight exercise x = x == result where
 
 propSetSuccess :: Exercise -> Boolean -> Boolean
 propSetSuccess exercise x = x == result where
-    result = (\(Exercise record) -> record.success) <<< setSuccess exercise $ x
+    result = (\(Exercise record) -> record.succeed) <<< setSuccess exercise $ x
 
 main :: Effect Unit
 main = do

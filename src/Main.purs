@@ -7,7 +7,6 @@ import Data.Maybe
 import Data.Newtype (unwrap)
 
 import Effect (Effect)
-import Effect.Console (log)
 import Effect.Class (class MonadEffect)
 
 import Halogen as H
@@ -58,7 +57,7 @@ defaultWorkout =
         , sets: 5
         , reps: 5
         , weight: 0
-        , success: false
+        , succeed: false
         }
     ,
         Exercise
@@ -66,7 +65,7 @@ defaultWorkout =
         , sets: 5
         , reps: 5
         , weight: 0
-        , success: false
+        , succeed: false
         }
     ,
         Exercise
@@ -74,7 +73,7 @@ defaultWorkout =
         , sets: 3
         , reps: 8
         , weight: 0
-        , success: false
+        , succeed: false
         }
     ,
         Exercise
@@ -82,7 +81,7 @@ defaultWorkout =
         , sets: 3
         , reps: 5
         , weight: 0
-        , success: false
+        , succeed: false
         }
     ,
         Exercise
@@ -90,15 +89,15 @@ defaultWorkout =
         , sets: 3
         , reps: 5
         , weight: 0
-        , success: false
+        , succeed: false
         }
     ,
         Exercise
-        { movement: Movement "Lat Pulldown / Pullup"
+        { movement: Movement "Pulldown / Pullup"
         , sets: 3
         , reps: 8
         , weight: 0
-        , success: false
+        , succeed: false
         }
     ]
 
@@ -155,28 +154,33 @@ component =
     render :: State -> H.ComponentHTML Action Slots m
     render state = case state.editing of
         Nothing -> renderWorkout state.workout
-        Just exercise ->
-            HH.div_ [ HH.slot _exerciseEntry 0 ExerciseEntry.component exercise HandleExerciseEntry ]
+        Just exercise -> HH.slot _exerciseEntry 0 ExerciseEntry.component exercise HandleExerciseEntry
 
     renderWorkout :: Workout -> H.ComponentHTML Action Slots m
     renderWorkout workout =
-        HH.div_
-            [ HH.h1_ [ HH.text "Day A" ]
-            , HH.div_ <<< map renderExercise <<< take 3 $ workout
-            , HH.h1_ [ HH.text "Day B" ]
-            , HH.div_ <<< map renderExercise <<< drop 3 $ workout
+        HH.table [ HP.classes [ ClassName "main" ] ]
+            [ HH.tbody_ $
+                ( cons ( HH.tr_ [ HH.th [ HP.colSpan 4 ] [ HH.h1_ [ HH.text "Day A" ]]] )
+                     $ map renderExercise <<< take 3 $ workout )
+                <>
+                ( cons ( HH.tr_ [ HH.th [ HP.colSpan 4 ] [ HH.h1_ [ HH.text "Day B" ]]] )
+                     $ map renderExercise <<< drop 3 $ workout )
             ]
 
     renderExercise :: Exercise -> H.ComponentHTML Action Slots m 
     renderExercise (Exercise record) =
-        HH.div
-            [ HP.classes [ ClassName "exercise", ClassName $ if record.success then "successful" else "failed" ]
-            , HE.onClick (\_ -> Edit <<< Exercise $ record)
-            ]
-            [ HH.strong_ [ HH.text <<< show $ record.movement ]
-            , HH.text $ " - " <> show record.sets <> " sets of " <> show record.reps
-            , HH.text $ " at " <> show record.weight <> " lbs."
-            , HH.span
-                [ HP.classes [ ClassName "successCheckBox" ] ]
-                [ HH.text $ if record.success then " ✓ "  else " ✗ " ]
+        HH.tr
+            [ HE.onClick (\_ -> Edit <<< Exercise $ record) ]
+            [ HH.td
+                [ HP.classes [ ClassName "movement" ]]
+                [ HH.text <<< show $ record.movement ]
+            , HH.td_ [ HH.text $ show record.sets <> " sets of " <> show record.reps ]
+            , HH.td_ [ HH.text $ show record.weight <> " lbs." ]
+            , HH.td
+                [ HP.classes [ ClassName "successCheck" ] ]
+                [ HH.button
+                    [ HP.classes [ ClassName "exercise", ClassName $ if record.succeed then "succeed" else "fail" ]
+                    ]
+                    [ HH.text $ if record.succeed then "✓"  else "✗" ]
+                ]
             ]

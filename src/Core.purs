@@ -19,8 +19,8 @@ Terms:
     - weight (amount of additional weight lifted for a given exercise)
     - workout
         - Collection of exercises.  For CtB, there are 2 main workouts, labeled "Day A" and "Day B"
-    - success
-        - for purpose of the dashboard, also track whether the last attempt at a given exercise was completed successfully, or needs to be tried again
+    - succeed
+        - for purpose of the dashboard, also track whether the last attempt at a given exercise was completed succeedfully, or needs to be tried again
 
 -}
 
@@ -43,23 +43,20 @@ newtype Exercise =
         , reps :: Int
         , sets :: Int
         , weight :: Int
-        , success :: Boolean
+        , succeed :: Boolean
         }
 
 derive instance eqExercise :: Eq Exercise
 derive instance newtypeExercise :: Newtype Exercise _
 
 instance arbExercise :: Arbitrary Exercise where
-    arbitrary = (\movement reps sets weight success -> Exercise { movement, reps, sets, weight, success }) <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
+    arbitrary = (\movement reps sets weight succeed -> Exercise { movement, reps, sets, weight, succeed }) <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
 
 setWeight :: Exercise -> Int -> Exercise
 setWeight (Exercise record) x = Exercise record { weight = x }
 
 setSuccess :: Exercise -> Boolean -> Exercise
-setSuccess (Exercise record) x = Exercise record { success = x }
-
-toggleSuccess :: Exercise -> Exercise
-toggleSuccess (Exercise record) = Exercise $ record { success = not record.success }
+setSuccess (Exercise record) x = Exercise record { succeed = x }
 
 type Workout = Array Exercise
 
