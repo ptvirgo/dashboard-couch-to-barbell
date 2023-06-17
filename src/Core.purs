@@ -59,9 +59,3 @@ setSuccess :: Exercise -> Boolean -> Exercise
 setSuccess (Exercise record) x = Exercise record { succeed = x }
 
 type Workout = Array Exercise
-
-genWorkout :: Gen Workout
-genWorkout =
-    suchThat
-    (fromFoldable <$> vectorOf 3 arbitrary)
-    (\exercises -> 3 == (length <<< nub <<< map (_.movement <<< unwrap) $ exercises))
