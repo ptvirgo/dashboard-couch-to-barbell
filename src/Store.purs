@@ -2,13 +2,13 @@ module Store (saveWorkout, loadWorkout) where
 
 import Prelude
 
-import Data.Maybe
-import Data.Nullable
+import Data.Maybe (Maybe)
+import Data.Nullable (Nullable, toMaybe)
 
 import Effect
 import Effect.Uncurried
 
-import Core
+import Core (Workout)
 
 foreign import saveIt :: forall a. EffectFn1 a Unit
 

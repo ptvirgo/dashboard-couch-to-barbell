@@ -51,7 +51,6 @@ component =
     handleAction :: Action -> H.HalogenM State Action Slots Output m Unit
     handleAction (HandleIntEntry (IntEntry.UserEntered x)) = H.modify_ $ \state -> setWeight state x
     handleAction (Submit exercise) = H.raise $ UpdateExercise exercise
-    handleAction _ = pure unit
 
     render :: State -> H.ComponentHTML Action Slots m
     render (Exercise record) =

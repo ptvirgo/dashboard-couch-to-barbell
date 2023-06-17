@@ -1,11 +1,9 @@
 module Core where
 
 import Prelude
-import Data.Array
 import Data.Newtype (class Newtype, unwrap)
 
 import Test.QuickCheck (class Arbitrary, arbitrary)
-import Test.QuickCheck.Gen (Gen(..), suchThat, vectorOf)
 
 {- Language
 

@@ -2,8 +2,6 @@ module Test.Main where
 
 import Prelude
 
-import Data.Array
-
 import Effect (Effect)
 import Effect.Console (log)
 
